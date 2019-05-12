@@ -11,29 +11,42 @@ const shortPokeDescription = ({name, id, sprites: {front_default}}) => ({
   id,
   url: front_default,
 });
-const ListItem = styled.div.attrs({
-  className: 'fl w-20-l w-25-m w-50',
+
+const List = styled.section.attrs({className: 'cf w-100 pa4-ns'})``;
+
+const ListItem = styled.article.attrs({
+  className: 'fl w-100 w-50-m  w-20-ns pa4-ns tc',
 })``;
 
-const Title = styled.h2.attrs({
-  className: 'f6 f5-ns fw6 lh-title black mv0',
+const ScalingImage = styled.img.attrs({
+  className: 'db bg-center cover aspect-ratio--object',
+})``;
+
+const Title = styled.h3.attrs({
+  className: 'f5 f4-ns mb0 black-90',
 })``;
 
 const SubTitle = styled.h3.attrs({
-  className: 'f6 fw4 mt0 mb0 black-60',
+  className: 'f6 f5 fw4 mt2 black-60',
 })``;
 
-const PokeList = ({pokemon = [], showDetails}) =>
-  pokemon.map(shortPokeDescription).map(({name, url, id}) => (
-    <ListItem key={name}>
-      <a onClick={e => showDetails(id, name)}>
-        <img alt={name} src={url} />
-        <Title>{name}</Title>
-        <SubTitle>{id}</SubTitle>
-      </a>
-    </ListItem>
-  ));
-
+const PokeList = ({pokemon = [], showDetails}) => (
+  <List>
+    {pokemon.map(shortPokeDescription).map(({name, url, id}) => (
+      <ListItem key={name}>
+        <a
+          onClick={e => showDetails(id, name)}
+          className="ph2 ph0-ns pb3 link db">
+          <div className="aspect-ratio aspect-ratio--1x1">
+            <ScalingImage src={url} title={name} alt={name} />
+          </div>
+          <Title>{name}</Title>
+          <SubTitle>{id}</SubTitle>
+        </a>
+      </ListItem>
+    ))}
+  </List>
+);
 const FullPokemon = ({pokemon = [], selected, closeDetails}) => {
   const full = pokemon.find(({id}) => id === selected);
   const {
@@ -42,7 +55,7 @@ const FullPokemon = ({pokemon = [], selected, closeDetails}) => {
     weight,
     types,
     name,
-    id
+    id,
   } = full;
 
   return (
@@ -65,7 +78,7 @@ class PokeDex extends React.Component {
   };
 
   async componentDidMount() {
-    getJson('https://pokeapi.co/api/v2/pokemon/?limit=151')
+    return getJson('https://pokeapi.co/api/v2/pokemon/?limit=151')
       .then(({results: pokes}) =>
         Promise.all(pokes.map(({url}) => getJson(url))),
       )
@@ -79,13 +92,13 @@ class PokeDex extends React.Component {
   }
 
   showDetails = (id, e) => {
-    console.log({id})
+    console.log({id});
     /* e.preventDefault() */ this.setState({selected: id});
     console.log(e);
   };
 
   closeDetails = e => {
-    this.setState({selected:undefined})
+    this.setState({selected: undefined});
   };
 
   render() {
